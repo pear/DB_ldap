@@ -4,7 +4,7 @@
    <name>DB_ldap</name>
    <summary>DB interface to LDAP server</summary>
    <description>The PEAR::DB_ldap class provides a DB compliant interface to LDAP servers</description>
-   <license>GNU Lesser General Public</license>
+   <license>LGPL</license>
    <maintainers>
       <maintainer>
          <user>ludoo</user>
@@ -15,7 +15,7 @@
    </maintainers>
    <release>
       <version>1.0</version>
-      <license>GNU Lesser General Public</license>
+      <license>LGPL</license>
       <date>2002-01-14</date>
       <notes>This is the initial independent release of the DB_ldap package.</notes>
       <state>stable</state>
