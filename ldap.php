@@ -740,6 +740,7 @@ class DB_ldap extends DB_common
     function freeQuery($query = '')
     {
         $this->q_action = '';
+        $this->q_base   = '';
         $this->q_params = array();
         $this->attributes = null;
         $this->sorting = '';
