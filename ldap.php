@@ -348,6 +348,27 @@ class DB_ldap extends DB_common
             'transactions'  => false,
             'limit'         => false
         );
+        $this->errorcode_map = array(
+            0x10 => DB_ERROR_NOSUCHFIELD,               // LDAP_NO_SUCH_ATTRIBUTE
+            0x11 => DB_ERROR_INVALID,                   // LDAP_UNDEFINED_TYPE
+            0x12 => DB_ERROR_INVALID,                   // LDAP_INAPPROPRIATE_MATCHING
+            0x13 => DB_ERROR_INVALID,                   // LDAP_CONSTRAINT_VIOLATION
+            0x14 => DB_ERROR_ALREADY_EXISTS,            // LDAP_TYPE_OR_VALUE_EXISTS
+            0x15 => DB_ERROR_INVALID,                   // LDAP_INVALID_SYNTAX
+            0x20 => DB_ERROR_NOT_FOUND,                 // LDAP_NO_SUCH_OBJECT
+            0x21 => DB_ERROR_NOT_FOUND,                 // LDAP_ALIAS_PROBLEM
+            0x22 => DB_ERROR_INVALID,                   // LDAP_INVALID_DN_SYNTAX
+            0x23 => DB_ERROR_INVALID,                   // LDAP_IS_LEAF
+            0x24 => DB_ERROR_INVALID,                   // LDAP_ALIAS_DEREF_PROBLEM
+            0x30 => DB_ERROR_ACCESS_VIOLATION,          // LDAP_INAPPROPRIATE_AUTH
+            0x31 => DB_ERROR_ACCESS_VIOLATION,          // LDAP_INVALID_CREDENTIALS
+            0x32 => DB_ERROR_ACCESS_VIOLATION,          // LDAP_INSUFFICIENT_ACCESS
+            0x40 => DB_ERROR_MISMATCH,                  // LDAP_NAMING_VIOLATION
+            0x41 => DB_ERROR_MISMATCH,                  // LDAP_OBJECT_CLASS_VIOLATION
+            0x44 => DB_ERROR_ALREADY_EXISTS,            // LDAP_ALREADY_EXISTS
+            0x51 => DB_ERROR_CONNECT_FAILED,            // LDAP_SERVER_DOWN
+            0x57 => DB_ERROR_SYNTAX                     // LDAP_FILTER_ERROR
+        );
     }
 
     /**
@@ -360,7 +381,7 @@ class DB_ldap extends DB_common
     function connect($dsninfo, $persistent = false)
     {
         if (!DB::assertExtension('ldap'))
-            return $this->raiseError(DB_ERROR_EXTENSION_NOT_FOUND);
+            return $this->ldapRaiseError(DB_ERROR_EXTENSION_NOT_FOUND);
 
         $this->dsn = $dsninfo;
         $user   = $dsninfo['username'];
@@ -439,6 +460,7 @@ class DB_ldap extends DB_common
             $this->attributes = $attributes;
             # double escape char for filter: '(o=Przedsi\C4\99biorstwo)' => '(o=Przedsi\\C4\\99biorstwo)'
             $filter = str_replace('\\', '\\\\', $filter);
+            $this->last_query = $filter;
             if ($action == 'search')
                 $result = @ldap_search($this->connection, $base, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
             else if ($action == 'list')
@@ -446,9 +468,9 @@ class DB_ldap extends DB_common
             else if ($action == 'read')
                 $result = @ldap_read($this->connection, $base, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
             else
-                return $this->raiseError(DB_ERROR_UNKNOWN_LDAP_ACTION);
+                return $this->ldapRaiseError(DB_ERROR_UNKNOWN_LDAP_ACTION);
             if (!$result) {
-                return $this->raiseError(ldap_error($this->connection));
+                return $this->ldapRaiseError();
             }
         } else {
             # If first argument is an array, it contains the entry with DN.
@@ -468,6 +490,7 @@ class DB_ldap extends DB_common
             while (list($k, $v) = each($params)) {
                 if (isset(${$k})) ${$k} = $v;
             }
+            $this->last_query = $filter;
             if ($action == 'add')
                 $result = @ldap_add($this->connection, $filter, $entry);
             else if ($action == 'compare')
@@ -485,9 +508,9 @@ class DB_ldap extends DB_common
             else if ($action == 'rename')
                 $result = @ldap_rename($this->connection, $filter, $newrdn, $newparent, $deleteoldrdn);
             else
-                return $this->raiseError(DB_ERROR_UNKNOWN_LDAP_ACTION);
+                return $this->ldapRaiseError(DB_ERROR_UNKNOWN_LDAP_ACTION);
             if (!$result) {
-                return $this->raiseError(ldap_error($this->connection));
+                return $this->ldapRaiseError();
             }
         }
         $this->freeQuery();
@@ -732,12 +755,12 @@ class DB_ldap extends DB_common
 
     function getTables()
     {
-        return $this->raiseError(DB_ERROR_NOT_CAPABLE);
+        return $this->ldapRaiseError(DB_ERROR_NOT_CAPABLE);
     }
 
     function getListOf($type)
     {
-        return $this->raiseError(DB_ERROR_NOT_CAPABLE);
+        return $this->ldapRaiseError(DB_ERROR_NOT_CAPABLE);
     }
 
     function isManip($action)
@@ -798,11 +821,11 @@ class DB_ldap extends DB_common
                     $repeat = 1;
                     $data = $this->createSequence($seq_name);
                     if (DB::isError($data)) {
-                        return $this->raiseError($data);
+                        return $this->ldapRaiseError($data);
                     }
                 } else {
                     // Other error
-                    return $this->raiseError($data);
+                    return $this->ldapRaiseError($data);
                 }
             } else {
                 // Increment sequence value
@@ -815,13 +838,13 @@ class DB_ldap extends DB_common
                 $data = $this->simpleQuery($data, 'modify');
                 $this->popErrorHandling();
                 if (DB::isError($data)) {
-                    return $this->raiseError($data);
+                    return $this->ldapRaiseError($data);
                 }
                 // Get the entry and check if it contains our unique value
                 $this->base($seq_name);
                 $data = $this->getRow("objectClass=*");
                 if (DB::isError($data)) {
-                    return $this->raiseError($data);
+                    return $this->ldapRaiseError($data);
                 }
                 if ($data["uid"] != $seq_unique) {
                     // It is not our entry. Wait a little time and repeat
@@ -901,6 +924,27 @@ class DB_ldap extends DB_common
         $this->popErrorHandling();
         return $data;
     }
+
+    // {{{ ldapRaiseError()
+
+    function ldapRaiseError($errno = null)
+    {
+        if ($errno === null) {
+            $errno = $this->errorCode(ldap_errno($this->connection));
+        }
+        if ($this->q_action !== null) {
+            return $this->raiseError($errno, null, null,
+                sprintf('%s base="%s" filter="%s"',
+                    $this->q_action, $this->q_base, $this->last_query
+                ),
+                $errno == DB_ERROR_UNKNOWN_LDAP_ACTION ? null : @ldap_error($this->connection));
+        } else {
+            return $this->raiseError($errno, null, null, "???",
+                @ldap_error($this->connection));
+        }
+    }
+
+    // }}}
 
 }
 
