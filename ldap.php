@@ -381,7 +381,7 @@ class DB_ldap extends DB_common
     function connect($dsninfo, $persistent = false)
     {
         if (!DB::assertExtension('ldap'))
-            return $this->ldapRaiseError(DB_ERROR_EXTENSION_NOT_FOUND);
+            return $this->raiseError(DB_ERROR_EXTENSION_NOT_FOUND);
 
         $this->dsn = $dsninfo;
         $user   = $dsninfo['username'];
@@ -390,7 +390,7 @@ class DB_ldap extends DB_common
         $this->base = $dsninfo['database'];
 
         if ($host) {
-            $conn = ldap_connect($host);
+            $conn = @ldap_connect($host);
         } else {
             return $this->raiseError("unknown host $host");
         }
@@ -398,9 +398,9 @@ class DB_ldap extends DB_common
             return $this->raiseError(DB_ERROR_CONNECT_FAILED);
         }
         if ($user && $pw) {
-            $bind = ldap_bind($conn, $user, $pw);
+            $bind = @ldap_bind($conn, $user, $pw);
         } else {
-            $bind = ldap_bind($conn);
+            $bind = @ldap_bind($conn);
         }
         if (!$bind) {
             return $this->raiseError(DB_ERROR_BIND_FAILED);
