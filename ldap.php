@@ -45,7 +45,7 @@ class LDAP_result extends DB_result
 {
 
     // {{{ properties
-    
+
     /**
      * data returned from ldap_entries()
      * @access private
@@ -61,7 +61,7 @@ class LDAP_result extends DB_result
      * @access private
      */
     var $_record    = null;
-    
+
     // }}}
     // {{{ constructor
 
@@ -138,8 +138,8 @@ class LDAP_result extends DB_result
         }
         return DB_OK;
     }
-    
-    
+
+
     /**
      * Fetch and return a row of data (it uses driver->fetchInto for that)
      * @param int $fetchmode  format of fetched row
@@ -170,7 +170,7 @@ class LDAP_result extends DB_result
      * @return  mixed  DB_OK on success, NULL on no more rows or
      *                 a DB_Error object on error
      *
-     * @access public     
+     * @access public
      */
 
     function fetchInto(&$ar, $fetchmode = DB_FETCHMODE_DEFAULT, $rownum = null)
@@ -184,7 +184,7 @@ class LDAP_result extends DB_result
         }
         return DB_OK;
     }
-    
+
     /**
      * return all records
      *
@@ -196,7 +196,7 @@ class LDAP_result extends DB_result
      * @return  mixed  DB_OK on success, NULL on no more rows or
      *                 a DB_Error object on error
      *
-     * @access public     
+     * @access public
      */
     function fetchAll($fetchmode = DB_FETCHMODE_DEFAULT, $rownum = null)
     {
@@ -221,13 +221,13 @@ class LDAP_result extends DB_result
     {
         return(strcmp(strtolower($this->_recordset[$a][$this->dbh->sorting]), strtolower($this->_recordset[$b][$this->dbh->sorting])));
     }
-  
+
     /**
      * Get the number of rows in a result set.
      *
      * @return int the number of rows, or a DB error
      *
-     * @access public     
+     * @access public
      */
     function numRows()
     {
@@ -240,7 +240,7 @@ class LDAP_result extends DB_result
      *
      * @return bool true if a new result is available or false if not.
      *
-     * @access public     
+     * @access public
      */
     function nextResult()
     {
@@ -251,7 +251,7 @@ class LDAP_result extends DB_result
      * Frees the resources allocated for this result set.
      * @return  int     error code
      *
-     * @access public     
+     * @access public
      */
     function free()
     {
@@ -273,7 +273,7 @@ class LDAP_result extends DB_result
     /**
     * returns the actual rows number
     * @return integer
-    */    
+    */
     function getRowCounter()
     {
         $this->getRows();
@@ -295,7 +295,7 @@ class LDAP_result extends DB_result
 class DB_ldap extends DB_common
 {
     // {{{ properties
-    
+
     /**
      * LDAP connection
      * @access private
@@ -377,7 +377,7 @@ class DB_ldap extends DB_common
             return $this->raiseError(DB_ERROR_CONNECT_FAILED);
         }
         if ($user && $pw) {
-	    $bind = ldap_bind($conn, $user, $pw);
+            $bind = ldap_bind($conn, $user, $pw);
         } else {
             $bind = ldap_bind($conn);
         }
@@ -437,7 +437,7 @@ class DB_ldap extends DB_common
             $this->sorting = $sorting;
             $this->sorting_method = $sorting_method;
             $this->attributes = $attributes;
-	    # double escape char for filter: '(o=Przedsi\C4\99biorstwo)' => '(o=Przedsi\\C4\\99biorstwo)'
+            # double escape char for filter: '(o=Przedsi\C4\99biorstwo)' => '(o=Przedsi\\C4\\99biorstwo)'
             $filter = str_replace('\\', '\\\\', $filter);
             if ($action == 'search')
                 $result = @ldap_search($this->connection, $base, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
@@ -580,7 +580,7 @@ class DB_ldap extends DB_common
         $this->limit_count = $count;
         return $query;
     }
-    
+
     /**
      * Executes a query returning only a specified number of rows
      *
@@ -701,7 +701,7 @@ class DB_ldap extends DB_common
         $this->q_params = $params;
         return(parent::getAssoc($query, $force_array, $data, $fetchmode, $group));
     }
-    
+
     /**
      * Fetch all the rows returned from a query.
      *
@@ -724,7 +724,7 @@ class DB_ldap extends DB_common
         $this->q_params = $params;
         return(parent::getAll($query, $data, $fetchmode));
     }
-    
+
     function numRows($result)
     {
         return $result->numRows();
@@ -832,7 +832,7 @@ class DB_ldap extends DB_common
                 }
             }
         } while ($repeat);
-        
+
         if (DB::isError($data)) {
             return $data;
         }
