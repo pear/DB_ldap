@@ -28,7 +28,7 @@
 <!-- Release details -->
       <version>0.1</version>
 
-      <state>beta</state>
+      <state>stable</state>
 
 <!-- 'alpha','beta','stable','snapshot' -->
       <date>2002-01-14</date>
