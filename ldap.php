@@ -478,6 +478,7 @@ class DB_ldap extends DB_common
                 return $this->raiseError();
             }
         }
+        $this->freeQuery();
         return $result;
     }
 
@@ -749,8 +750,8 @@ class DB_ldap extends DB_common
 
     function base($base = null)
     {
- $this->q_base = $base ? $base : null;
- return true;
+        $this->q_base = ($base !== null) ? $base : null;
+        return true;
     }
 
 
