@@ -449,14 +449,14 @@ class DB_ldap extends DB_common
                 return $this->raiseError();
             }
         } else {
-     # If first argument is an array, it contains the entry with DN.
-     if (is_array($filter)) {
- $entry     = $filter;
- $filter     = $entry["dn"];
-     } else {
-        $entry      = array();
-     }
-     unset($entry["dn"]);
+            # If first argument is an array, it contains the entry with DN.
+            if (is_array($filter)) {
+                $entry = $filter;
+                $filter = $entry["dn"];
+            } else {
+                $entry = array();
+            }
+            unset($entry["dn"]);
             $attribute      = '';
             $value          = '';
             $newrdn         = '';
@@ -782,54 +782,55 @@ class DB_ldap extends DB_common
     {
         $repeat = 0;
         do {
-     // Get the sequence entry
-     $this->base($seq_name);
+            // Get the sequence entry
+            $this->base($seq_name);
             $this->pushErrorHandling(PEAR_ERROR_RETURN);
-     $data = $this->getRow("objectClass=*");
+            $data = $this->getRow("objectClass=*");
             $this->popErrorHandling();
 
-     if (DB::isError($data)) {
- // DB_ldap doesn't use DB_ERROR_NOT_FOUND
-        if ($ondemand && $repeat == 0
-     && $data->getCode() == DB_ERROR) {
-     // Try to create sequence and repeat
-     $repeat = 1;
-                $data = $this->createSequence($seq_name);
-                if (DB::isError($data)) {
-                return $this->raiseError($data);
+            if (DB::isError($data)) {
+                // DB_ldap doesn't use DB_ERROR_NOT_FOUND
+                if ($ondemand && $repeat == 0
+                && $data->getCode() == DB_ERROR) {
+                // Try to create sequence and repeat
+                    $repeat = 1;
+                    $data = $this->createSequence($seq_name);
+                    if (DB::isError($data)) {
+                        return $this->raiseError($data);
+                    }
+                } else {
+                    // Other error
+                    return $this->raiseError($data);
                 }
- } else {
-     // Other error
-         return $this->raiseError($data);
- }
-     } else {
- // Increment sequence value
- $data["cn"]++;
- // Unique identificator of transaction
- $seq_unique = mt_rand();
- $data["uid"] = $seq_unique;
- // Modify the LDAP entry
-        $this->pushErrorHandling(PEAR_ERROR_RETURN);
- $data = $this->simpleQuery($data, 'modify');
-        $this->popErrorHandling();
-            if (DB::isError($data)) {
-                return $this->raiseError($data);
+            } else {
+                // Increment sequence value
+                $data["cn"]++;
+                // Unique identificator of transaction
+                $seq_unique = mt_rand();
+                $data["uid"] = $seq_unique;
+                // Modify the LDAP entry
+                $this->pushErrorHandling(PEAR_ERROR_RETURN);
+                $data = $this->simpleQuery($data, 'modify');
+                $this->popErrorHandling();
+                if (DB::isError($data)) {
+                    return $this->raiseError($data);
+                }
+                // Get the entry and check if it contains our unique value
+                $this->base($seq_name);
+                $data = $this->getRow("objectClass=*");
+                if (DB::isError($data)) {
+                    return $this->raiseError($data);
+                }
+                if ($data["uid"] != $seq_unique) {
+                    // It is not our entry. Wait a little time and repeat
+                    sleep(1);
+                    $repeat = 1;
+                } else {
+                    $repeat = 0;
+                }
             }
- // Get the entry and check if it contains our unique value
- $this->base($seq_name);
- $data = $this->getRow("objectClass=*");
-            if (DB::isError($data)) {
-                return $this->raiseError($data);
-            }
- if ($data["uid"] != $seq_unique) {
-     // It is not our entry. Wait a little time and repeat
-     sleep(1);
-     $repeat = 1;
- } else {
-     $repeat = 0;
- }
-     }
         } while ($repeat);
+        
         if (DB::isError($data)) {
             return $data;
         }
@@ -860,20 +861,20 @@ class DB_ldap extends DB_common
      */
     function createSequence($seq_name)
     {
- // Extract $seq_id from DN
- ereg("^([^,]*),", $seq_name, $regs);
- $seq_id = $regs[1];
+        // Extract $seq_id from DN
+        ereg("^([^,]*),", $seq_name, $regs);
+        $seq_id = $regs[1];
 
- // Create the sequence entry
- $data = array(
-     dn => $seq_name,
-     objectclass => array("top", "extensibleObject"),
-     sn => $seq_id,
-     cn => 0,
-     uid => 0
- );
+        // Create the sequence entry
+        $data = array(
+            dn => $seq_name,
+            objectclass => array("top", "extensibleObject"),
+            sn => $seq_id,
+            cn => 0,
+            uid => 0
+        );
 
- // Add the LDAP entry
+        // Add the LDAP entry
         $this->pushErrorHandling(PEAR_ERROR_RETURN);
         $data = $this->simpleQuery($data, 'add');
         $this->popErrorHandling();
@@ -889,10 +890,10 @@ class DB_ldap extends DB_common
      */
     function dropSequence($seq_name)
     {
- // Delete the sequence entry
- $data = array(
-     dn => $seq_name,
- );
+        // Delete the sequence entry
+        $data = array(
+            dn => $seq_name,
+        );
         $this->pushErrorHandling(PEAR_ERROR_RETURN);
         $data = $this->simpleQuery($data, 'delete');
         $this->popErrorHandling();
