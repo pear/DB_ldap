@@ -20,7 +20,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // Contributors
-// - Piotr Roszatycki <Piotr_Roszatycki@netia.net.pl>
+// - Piotr Roszatycki <dexter@debian.org>
 //   DB_ldap::base() method, support for LDAP sequences, various fixes
 //
 // $Id$
@@ -446,7 +446,7 @@ class DB_ldap extends DB_common
             else
                 return $this->raiseError(DB_ERROR_UNKNOWN_LDAP_ACTION);
             if (!$result) {
-                return $this->raiseError();
+                return $this->raiseError(ldap_error($this->connection));
             }
         } else {
             # If first argument is an array, it contains the entry with DN.
@@ -485,7 +485,7 @@ class DB_ldap extends DB_common
             else
                 return $this->raiseError(DB_ERROR_UNKNOWN_LDAP_ACTION);
             if (!$result) {
-                return $this->raiseError();
+                return $this->raiseError(ldap_error($this->connection));
             }
         }
         $this->freeQuery();
