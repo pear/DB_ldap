@@ -20,15 +20,12 @@
       </maintainer>
    </maintainers>
    <release>
-      <version>1.1</version>
+      <version>1.1.0</version>
       <license>LGPL</license>
-      <date>2004-07-12</date>
+      <date>2004-07-13</date>
       <notes>
-=============
-BUGS FIXED:
-#1827: DB_ldap requires DB to be installed, but this is not reflected in the
-package.xml file.
-=============
+      Changed version number to comply with the PEAR naming convention
+      http://pear.php.net/group/docs/20040226-vn.php
       </notes>
       <state>stable</state>
       <filelist>
