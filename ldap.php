@@ -29,7 +29,6 @@
 //
 
 require_once 'DB/common.php';
-require_once 'DB/DB.php';
 
 define("DB_ERROR_BIND_FAILED",     -26);
 define("DB_ERROR_UNKNOWN_LDAP_ACTION",     -27);
