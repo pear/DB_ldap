@@ -19,6 +19,9 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
+// Contributors
+// - Piotr Roszatycki <Piotr_Roszatycki@netia.net.pl>
+//   DB_ldap::base() method, support for LDAP sequences, various fixes
 //
 // $Id$
 //
@@ -313,7 +316,7 @@ class DB_ldap extends DB_common
      * returning a true/false value
      * @access private
      */
-    var $manip          = array('compare', 'delete', 'modify', 'mod_add', 'mod_del', 'mod_replace', 'rename');
+    var $manip          = array('add', 'compare', 'delete', 'modify', 'mod_add', 'mod_del', 'mod_replace', 'rename');
     /**
      * store the real LDAP action to perform
      * (ie PHP ldap function to call) for a query
@@ -435,18 +438,25 @@ class DB_ldap extends DB_common
             $this->sorting_method = $sorting_method;
             $this->attributes = $attributes;
             if ($action == 'search')
-                $result = ldap_search($this->connection, $base, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
+                $result = @ldap_search($this->connection, $base, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
             else if ($action == 'list')
-                $result = ldap_list($this->connection, $base, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
+                $result = @ldap_list($this->connection, $base, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
             else if ($action == 'read')
-                $result = ldap_read($this->connection, $base, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
+                $result = @ldap_read($this->connection, $base, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
             else
                 return $this->raiseError(DB_ERROR_UNKNOWN_LDAP_ACTION);
             if (!$result) {
                 return $this->raiseError();
             }
         } else {
-            $entry          = array();
+     # If first argument is an array, it contains the entry with DN.
+     if (is_array($filter)) {
+ $entry     = $filter;
+ $filter     = $entry["dn"];
+     } else {
+        $entry      = array();
+     }
+     unset($entry["dn"]);
             $attribute      = '';
             $value          = '';
             $newrdn         = '';
@@ -457,21 +467,21 @@ class DB_ldap extends DB_common
                 if (isset(${$k})) ${$k} = $v;
             }
             if ($action == 'add')
-                $result = ldap_add($this->connection, $filter, $entry);
+                $result = @ldap_add($this->connection, $filter, $entry);
             else if ($action == 'compare')
-                $result = ldap_add($this->connection, $filter, $attribute, $value);
+                $result = @ldap_add($this->connection, $filter, $attribute, $value);
             else if ($action == 'delete')
-                $result = ldap_delete($this->connection, $filter);
+                $result = @ldap_delete($this->connection, $filter);
             else if ($action == 'modify')
-                $result = ldap_modify($this->connection, $filter, $entry);
+                $result = @ldap_modify($this->connection, $filter, $entry);
             else if ($action == 'mod_add')
-                $result = ldap_mod_add($this->connection, $filter, $entry);
+                $result = @ldap_mod_add($this->connection, $filter, $entry);
             else if ($action == 'mod_del')
-                $result = ldap_mod_del($this->connection, $filter, $entry);
+                $result = @ldap_mod_del($this->connection, $filter, $entry);
             else if ($action == 'mod_replace')
-                $result = ldap_mod_replace($this->connection, $filter, $entry);
+                $result = @ldap_mod_replace($this->connection, $filter, $entry);
             else if ($action == 'rename')
-                $result = ldap_rename($this->connection, $filter, $newrdn, $newparent, $deleteoldrdn);
+                $result = @ldap_rename($this->connection, $filter, $newrdn, $newparent, $deleteoldrdn);
             else
                 return $this->raiseError(DB_ERROR_UNKNOWN_LDAP_ACTION);
             if (!$result) {
@@ -754,6 +764,140 @@ class DB_ldap extends DB_common
         return true;
     }
 
+    /**
+     * Get the next value in a sequence.
+     *
+     * LDAP provides transactions for only one entry and we need to
+     * prevent race condition. If unique value before and after modify
+     * aren't equal then wait and try again.
+     *
+     * The name of sequence is LDAP DN of entry.
+     *
+     * @access public
+     * @param string $seq_name the DN of the sequence
+     * @param bool $ondemand whether to create the sequence on demand
+     * @return a sequence integer, or a DB error
+     */
+    function nextId($seq_name, $ondemand = true)
+    {
+        $repeat = 0;
+        do {
+     // Get the sequence entry
+     $this->base($seq_name);
+            $this->pushErrorHandling(PEAR_ERROR_RETURN);
+     $data = $this->getRow("objectClass=*");
+            $this->popErrorHandling();
+
+     if (DB::isError($data)) {
+ // DB_ldap doesn't use DB_ERROR_NOT_FOUND
+        if ($ondemand && $repeat == 0
+     && $data->getCode() == DB_ERROR) {
+     // Try to create sequence and repeat
+     $repeat = 1;
+                $data = $this->createSequence($seq_name);
+                if (DB::isError($data)) {
+                return $this->raiseError($data);
+                }
+ } else {
+     // Other error
+         return $this->raiseError($data);
+ }
+     } else {
+ // Increment sequence value
+ $data["cn"]++;
+ // Unique identificator of transaction
+ $seq_unique = mt_rand();
+ $data["uid"] = $seq_unique;
+ // Modify the LDAP entry
+        $this->pushErrorHandling(PEAR_ERROR_RETURN);
+ $data = $this->simpleQuery($data, 'modify');
+        $this->popErrorHandling();
+            if (DB::isError($data)) {
+                return $this->raiseError($data);
+            }
+ // Get the entry and check if it contains our unique value
+ $this->base($seq_name);
+ $data = $this->getRow("objectClass=*");
+            if (DB::isError($data)) {
+                return $this->raiseError($data);
+            }
+ if ($data["uid"] != $seq_unique) {
+     // It is not our entry. Wait a little time and repeat
+     sleep(1);
+     $repeat = 1;
+ } else {
+     $repeat = 0;
+ }
+     }
+        } while ($repeat);
+        if (DB::isError($data)) {
+            return $data;
+        }
+        return $data["cn"];
+    }
+
+    /**
+     * Create the sequence
+     *
+     * The sequence entry is based on core schema with extensibleObject,
+     * so it should work with any LDAP server which doesn't check schema
+     * or supports extensibleObject object class.
+     *
+     * Sequence name have to be DN started with "sn=$seq_id,", i.e.:
+     *
+     * $seq_name = "sn=uidNumber,ou=sequences,dc=php,dc=net";
+     *
+     * dn: $seq_name
+     * objectClass: top
+     * objectClass: extensibleObject
+     * sn: $seq_id
+     * cn: $seq_value
+     * uid: $seq_uniq
+     *
+     * @param string $seq_name the DN of the sequence
+     * @return mixed DB_OK on success or DB error on error
+     * @access public
+     */
+    function createSequence($seq_name)
+    {
+ // Extract $seq_id from DN
+ ereg("^([^,]*),", $seq_name, $regs);
+ $seq_id = $regs[1];
+
+ // Create the sequence entry
+ $data = array(
+     dn => $seq_name,
+     objectclass => array("top", "extensibleObject"),
+     sn => $seq_id,
+     cn => 0,
+     uid => 0
+ );
+
+ // Add the LDAP entry
+        $this->pushErrorHandling(PEAR_ERROR_RETURN);
+        $data = $this->simpleQuery($data, 'add');
+        $this->popErrorHandling();
+        return $data;
+    }
+
+    /**
+     * Drop a sequence
+     *
+     * @param string $seq_name the DN of the sequence
+     * @return mixed DB_OK on success or DB error on error
+     * @access public
+     */
+    function dropSequence($seq_name)
+    {
+ // Delete the sequence entry
+ $data = array(
+     dn => $seq_name,
+ );
+        $this->pushErrorHandling(PEAR_ERROR_RETURN);
+        $data = $this->simpleQuery($data, 'delete');
+        $this->popErrorHandling();
+        return $data;
+    }
 
 }
 
