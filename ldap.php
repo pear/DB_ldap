@@ -107,7 +107,11 @@ class LDAP_result extends DB_result
                             // begin third loop, iterate through attribute values
                             if (!is_int($value_idx)) continue;
                             if (empty($value)) $value = $attr_value;
-                            else $value .= "\n$attr_value";
+/*                            else {
+                                if (is_array($value)) $value[] = $attr_value;
+                                else $value = array($value, $attr_value);
+                            }
+*/                          else $value .= "\n$attr_value";
                             // end third loop
                         }
                         $rs[$attr] = $value;
@@ -120,8 +124,10 @@ class LDAP_result extends DB_result
                 // end first loop
             }
             $this->_entries = null;
-            if (!empty($sorting)) {
-                reset($this->_recordset);
+            if (!is_array($this->_recordset))
+                $this->_recordset = array();
+            if (!empty($this->dbh->sorting)) {
+                $sorting_method = (!empty($this->dbh->sorting_method) ? $this->dbh->sorting_method : 'cmp');
                 uksort($this->_recordset, array(&$this, $sorting_method));
             }
             reset($this->_recordset);
@@ -210,7 +216,7 @@ class LDAP_result extends DB_result
 
     function cmp($a, $b)
     {
-        return(strcmp($this->_recordset[$a][$this->sorting], $this->_recordset[$b][$this->sorting]));
+        return(strcmp($this->_recordset[$a][$this->dbh->sorting], $this->_recordset[$b][$this->dbh->sorting]));
     }
   
     /**
@@ -415,12 +421,13 @@ class DB_ldap extends DB_common
             $timelimit = 0;
             $deref = LDAP_DEREF_NEVER;
             $sorting = '';
-            $sorting_method = 'cmp';
+            $sorting_method = '';
             reset($params);
             while (list($k, $v) = each($params)) {
                 if (isset(${$k})) ${$k} = $v;
             }
             $this->sorting = $sorting;
+            $this->sorting_method = $sorting_method;
             $this->attributes = $attributes;
             if ($action == 'search')
                 $result = ldap_search($this->connection, $this->base, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
