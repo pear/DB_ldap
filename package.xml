@@ -20,8 +20,8 @@
       <notes>This is the initial independent release of the DB_ldap package.</notes>
       <state>stable</state>
       <filelist>
-         <dir name="/" BaseInstallDir="DB">
-            <file role="php">ldap.php</file>
+         <dir name="/" baseinstalldir="DB">
+            <file role="php" baseinstalldir="DB">ldap.php</file>
          </dir>
       </filelist>
    </release>
