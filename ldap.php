@@ -446,19 +446,19 @@ class DB_ldap extends DB_common
             }
             if ($action == 'add')
                 $result = ldap_add($this->connection, $filter, $entry);
-            if ($action == 'compare')
+            else if ($action == 'compare')
                 $result = ldap_add($this->connection, $filter, $attribute, $value);
-            if ($action == 'delete')
+            else if ($action == 'delete')
                 $result = ldap_delete($this->connection, $filter);
-            if ($action == 'modify')
+            else if ($action == 'modify')
                 $result = ldap_modify($this->connection, $filter, $entry);
-            if ($action == 'mod_add')
+            else if ($action == 'mod_add')
                 $result = ldap_mod_add($this->connection, $filter, $entry);
-            if ($action == 'mod_del')
+            else if ($action == 'mod_del')
                 $result = ldap_mod_del($this->connection, $filter, $entry);
-            if ($action == 'mod_replace')
+            else if ($action == 'mod_replace')
                 $result = ldap_mod_replace($this->connection, $filter, $entry);
-            if ($action == 'rename')
+            else if ($action == 'rename')
                 $result = ldap_rename($this->connection, $filter, $newrdn, $newparent, $deleteoldrdn);
             else
                 return $this->raiseError(DB_ERROR_UNKNOWN_LDAP_ACTION);
