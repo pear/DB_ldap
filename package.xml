@@ -15,16 +15,10 @@
    </maintainers>
    <release>
       <version>1.0</version>
-	  <license>GNU Lesser General Public</license>
-      <state>stable</state>
+      <license>GNU Lesser General Public</license>
       <date>2002-01-14</date>
       <notes>This is the initial independent release of the DB_ldap package.</notes>
-      <filelist>
-      	<file>ldap.php</file>
-      </filelist>
-      <deps>
-      	<dep type="pkg">DB</dep>
-      </deps>
+      <state>stable</state>
       <filelist>
          <dir name="/" BaseInstallDir="DB">
             <file role="php">ldap.php</file>
