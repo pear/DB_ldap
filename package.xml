@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<package>
+<!-- Package description -->
+   <name>DB_ldap</name>
+
+   <summary>DB interface to LDAP server</summary>
+
+   <description>The PEAR::DB_ldap class provides a DB compliant interface to LDAP servers</description>
+
+<!-- Authors -->
+   <maintainers>
+      <maintainer>
+         <user>ludoo</user>
+
+<!-- php cvs user -->
+         <name>Ludovico Magnocavallo</name>
+
+         <email>ludo@sumatrasolutions.com</email>
+
+         <role>lead</role>
+
+<!-- 'lead','developer','contributor','helper' -->
+      </maintainer>
+   </maintainers>
+
+<!-- Current release -->
+   <release>
+<!-- Release details -->
+      <version>0.1</version>
+
+      <state>beta</state>
+
+<!-- 'alpha','beta','stable','snapshot' -->
+      <date>2002-01-14</date>
+
+      <notes>This is the initial independent release of the DB_ldap package.</notes>
+
+<!-- Dependencies -->
+      <deps>
+      </deps>
+
+<!-- see point 6. -->
+<!-- Files -->
+      <filelist>
+         <dir name="/" BaseInstallDir="DB">
+            <file role="php">ldap.php</file>
+         </dir>
+      </filelist>
+   </release>
+</package>
