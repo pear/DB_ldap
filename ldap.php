@@ -800,14 +800,14 @@ class DB_ldap extends DB_common
         return true;
     }
 
-    function ldapBase($base = null)
+    function ldapSetBase($base = null)
     {
         $this->base = ($base !== null) ? $base : $this->d_base;
         $this->q_base = '';
         return true;
     }
 
-    function ldapAction($action = 'search')
+    function ldapSetAction($action = 'search')
     {
         if ($action != 'search' && $action != 'list' && $action != 'read') {
             return $this->ldapRaiseError(DB_ERROR_UNKNOWN_LDAP_ACTION);
