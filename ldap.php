@@ -437,6 +437,8 @@ class DB_ldap extends DB_common
             $this->sorting = $sorting;
             $this->sorting_method = $sorting_method;
             $this->attributes = $attributes;
+	    # double escape char for filter: '(o=Przedsi\C4\99biorstwo)' => '(o=Przedsi\\C4\\99biorstwo)'
+            $filter = str_replace('\\', '\\\\', $filter);
             if ($action == 'search')
                 $result = @ldap_search($this->connection, $base, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
             else if ($action == 'list')
