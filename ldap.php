@@ -22,11 +22,15 @@
 // Contributors
 // - Piotr Roszatycki <dexter@debian.org>
 //   DB_ldap::base() method, support for LDAP sequences, various fixes
+// - Aaron Spencer Hawley <aaron dot hawley at uvm dot edu>
+//   fix to use port number if present in DB_ldap->connect()
 //
 // $Id$
 //
 
 require_once 'DB/common.php';
+require_once 'DB/DB.php';
+
 define("DB_ERROR_BIND_FAILED",     -26);
 define("DB_ERROR_UNKNOWN_LDAP_ACTION",     -27);
 
@@ -396,14 +400,24 @@ class DB_ldap extends DB_common
         $this->dsn = $dsninfo;
         $user   = $dsninfo['username'];
         $pw     = $dsninfo['password'];
-        $host   = $dsninfo['hostspec'];
+        if (($colon_pos = strpos($dsninfo['hostspec'], ':')) !== false) {
+            $host = substr($dsninfo['hostspec'], 0, $colon_pos);
+            $port = substr($dsninfo['hostspec'], $colon_pos + 1);
+        } else {
+            $host = $dsninfo['hostspec'];
+            $port = null;
+        }
         $this->base = $dsninfo['database'];
         $this->d_base = $this->base;
 
-        if ($host) {
-            $conn = @ldap_connect($host);
+        if (empty($host)) {
+            return $this->raiseError("no host specified $host");
+        } // else ...
+
+        if (isset($port)) {
+            $conn = ldap_connect($host, $port);
         } else {
-            return $this->raiseError("unknown host $host");
+            $conn = ldap_connect($host);
         }
         if (!$conn) {
             return $this->raiseError(DB_ERROR_CONNECT_FAILED);
