@@ -3,7 +3,7 @@
 // Pear DB LDAP - Database independent query interface definition
 // for PHP's LDAP extension.
 //
-// Copyright (C) 2002 Ludovico Magnocavallo <ludo@sumatrasolutions.com>
+// Copyright (c) 2002-2003 Ludovico Magnocavallo <ludo@sumatrasolutions.com>
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
