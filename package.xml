@@ -14,7 +14,7 @@
       </maintainer>
    </maintainers>
    <release>
-      <version>0.1</version>
+      <version>1.0</version>
 	  <license>GNU Lesser General Public</license>
       <state>stable</state>
       <date>2002-01-14</date>
@@ -25,9 +25,6 @@
       <deps>
       	<dep type="pkg">DB</dep>
       </deps>
-
-<!-- see point 6. -->
-<!-- Files -->
       <filelist>
          <dir name="/" BaseInstallDir="DB">
             <file role="php">ldap.php</file>
