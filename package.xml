@@ -4,7 +4,7 @@
    <name>DB_ldap</name>
    <summary>DB interface to LDAP server</summary>
    <description>The PEAR::DB_ldap class provides a DB compliant interface to LDAP servers</description>
-   <license>LGPL</license>
+   <license>PHP License</license>
    <maintainers>
       <maintainer>
          <user>ludoo</user>
@@ -20,15 +20,25 @@
       </maintainer>
    </maintainers>
    <release>
-      <version>1.0</version>
+      <version>1.1</version>
       <license>LGPL</license>
-      <date>2002-01-14</date>
-      <notes>This is the initial independent release of the DB_ldap package.</notes>
+      <date>2004-07-12</date>
+      <notes>
+=============
+BUGS FIXED:
+#1827: DB_ldap requires DB to be installed, but this is not reflected in the
+package.xml file.
+=============
+      </notes>
       <state>stable</state>
       <filelist>
          <dir name="/" baseinstalldir="DB">
             <file role="php" baseinstalldir="DB">ldap.php</file>
          </dir>
       </filelist>
+      <deps>
+        <dep type="pkg" rel="has">PEAR</dep>
+        <dep type="pkg" rel="has">DB</dep>
+      </deps>
    </release>
 </package>
