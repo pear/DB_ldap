@@ -12,6 +12,12 @@
          <name>Ludovico Magnocavallo</name>
          <email>ludo@asiatica.org</email>
       </maintainer>
+      <maintainer>
+         <user>dexter</user>
+         <role>developer</role>
+         <name>Piotr Roszatycki</name>
+         <email>dexter@debian.org</email>
+      </maintainer>
    </maintainers>
    <release>
       <version>1.0</version>
