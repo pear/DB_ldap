@@ -377,7 +377,7 @@ class DB_ldap extends DB_common
             return $this->raiseError(DB_ERROR_CONNECT_FAILED);
         }
         if ($user && $pw) {
-            $bind = ldap_bind($conn, "${user}," . $this->base, $pw);
+	    $bind = ldap_bind($conn, $user, $pw);
         } else {
             $bind = ldap_bind($conn);
         }
