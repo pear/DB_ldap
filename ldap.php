@@ -216,7 +216,7 @@ class LDAP_result extends DB_result
 
     function cmp($a, $b)
     {
-        return(strcmp($this->_recordset[$a][$this->dbh->sorting], $this->_recordset[$b][$this->dbh->sorting]));
+        return(strcmp(strtolower($this->_recordset[$a][$this->dbh->sorting]), strtolower($this->_recordset[$b][$this->dbh->sorting])));
     }
   
     /**
@@ -255,7 +255,7 @@ class LDAP_result extends DB_result
         $this->_recordset = null;
         $this->_record = null;
         ldap_free_result($this->result);
-        $this->result = false;
+        $this->result = null;
         return true;
     }
 
@@ -737,7 +737,7 @@ class DB_ldap extends DB_common
         return true;
     }
 
-    function freeQuery($query)
+    function freeQuery($query = '')
     {
         $this->q_action = '';
         $this->q_params = array();
