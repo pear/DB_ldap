@@ -107,11 +107,11 @@ class LDAP_result extends DB_result
                             // begin third loop, iterate through attribute values
                             if (!is_int($value_idx)) continue;
                             if (empty($value)) $value = $attr_value;
-/*                            else {
+                            else {
                                 if (is_array($value)) $value[] = $attr_value;
                                 else $value = array($value, $attr_value);
                             }
-*/                          else $value .= "\n$attr_value";
+//                          else $value .= "\n$attr_value";
                             // end third loop
                         }
                         $rs[$attr] = $value;
@@ -304,6 +304,11 @@ class DB_ldap extends DB_common
      */
     var $base           = '';
     /**
+     * query base dn
+     * @access private
+     */
+    var $q_base           = '';
+    /**
      * array of LDAP actions that only manipulate data
      * returning a true/false value
      * @access private
@@ -414,7 +419,7 @@ class DB_ldap extends DB_common
             $params = (count($this->q_params) > 0 ? $this->q_params : array());
         }
         if (!$this->isManip($action)) {
-            $base = $this->base;
+            $base = $this->q_base ? $this->q_base : $this->base;
             $attributes = array();
             $attrsonly = 0;
             $sizelimit = 0;
@@ -430,11 +435,11 @@ class DB_ldap extends DB_common
             $this->sorting_method = $sorting_method;
             $this->attributes = $attributes;
             if ($action == 'search')
-                $result = ldap_search($this->connection, $this->base, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
+                $result = ldap_search($this->connection, $base, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
             else if ($action == 'list')
-                $result = ldap_list($this->connection, $this->base, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
+                $result = ldap_list($this->connection, $base, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
             else if ($action == 'read')
-                $result = ldap_read($this->connection, $this->base, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
+                $result = ldap_read($this->connection, $base, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
             else
                 return $this->raiseError(DB_ERROR_UNKNOWN_LDAP_ACTION);
             if (!$result) {
@@ -740,6 +745,13 @@ class DB_ldap extends DB_common
         $this->sorting = '';
         return true;
     }
+
+    function base($base = null)
+    {
+ $this->q_base = $base ? $base : null;
+ return true;
+    }
+
 
 }
 
