@@ -548,8 +548,8 @@ class DB_ldap extends DB_common
      * @see DB_common::prepare() $this->execute()$this->simpleQuery()
      */
     function &query($query, $data = array(), $action = 'search', $params = array()) {
-        $this->q_action = $action;
-        $this->q_params = $params;
+        // $this->q_action = $action;
+        // $this->q_params = $params;
         if (sizeof($data) > 0) {
             $sth = $this->prepare($query);
             if (DB::isError($sth)) {
