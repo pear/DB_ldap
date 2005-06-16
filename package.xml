@@ -20,12 +20,11 @@
       </maintainer>
    </maintainers>
    <release>
-      <version>1.1.0</version>
+      <version>1.1.1</version>
       <license>LGPL</license>
       <date>2004-07-13</date>
       <notes>
-      Changed version number to comply with the PEAR naming convention
-      http://pear.php.net/group/docs/20040226-vn.php
+      Hopefully fix bugs #1456 #1057 and #3740
       </notes>
       <state>stable</state>
       <filelist>
