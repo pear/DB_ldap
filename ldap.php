@@ -589,7 +589,8 @@ class DB_ldap extends DB_common
      * @return LDAP_result object or DB Error object if no result
      * @see DB_common::prepare() $this->execute()$this->simpleQuery()
      */
-    function &query($query, $data = array(), $action = null, $params = array()) {
+    function &query($query, $data = array(), $action = null, $params = array())
+    {
         // $this->q_action = $action ? $action : $this->action;
         // $this->q_params = $params;
         if (sizeof($data) > 0) {
@@ -598,14 +599,15 @@ class DB_ldap extends DB_common
                 return $sth;
             }
             return $this->execute($sth, $data);
-        } else {
-            $result = $this->simpleQuery($query);
-            if (DB::isError($result) || $result === DB_OK) {
-                return $result;
-            } else {
-                return new LDAP_result($this, $result);
-            }
         }
+
+        $result = $this->simpleQuery($query);
+        if (DB::isError($result) || $result === DB_OK) {
+            return $result;
+        }
+
+        $obj = new LDAP_result($this, $result);
+        return $obj;
     }
 
     /**
@@ -741,7 +743,8 @@ class DB_ldap extends DB_common
     {
         $this->q_action = $action ? $action : $this->action;
         $this->q_params = $params;
-        return(parent::getAssoc($query, $force_array, $data, $fetchmode, $group));
+        $result = parent::getAssoc($query, $force_array, $data, $fetchmode, $group);
+        return $result;
     }
 
     /**
@@ -764,7 +767,8 @@ class DB_ldap extends DB_common
     {
         $this->q_action = $action ? $action : $this->action;
         $this->q_params = $params;
-        return(parent::getAll($query, $data, $fetchmode));
+        $result = parent::getAll($query, $data, $fetchmode);
+        return $result;
     }
 
     function numRows($result)
