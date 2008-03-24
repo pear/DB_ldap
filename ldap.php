@@ -153,13 +153,23 @@ class LDAP_result extends DB_result
      *
      * @access public
      */
-    function &fetchRow($fetchmode = DB_FETCHMODE_DEFAULT, $rownum=null)
+    function &fetchRow($fetchmode = DB_FETCHMODE_DEFAULT, $rownum = null)
     {
         $this->getRows();
-        if (count($this->_recordset) == 0) return null;
-        if ($this->_record !== null) $this->_record = next($this->_recordset);
-        else $this->_record = current($this->_recordset);
+        if (count($this->_recordset) === 0 ) {
+            return null;
+        }
+
+        if ($this->_record !== null) {
+            $this->_record = next($this->_recordset);
+        } else {
+            $this->_record = current($this->_recordset);
+        }
         $row = $this->_record;
+        if ($row === false) {
+            return null;
+        }
+
         return $row;
     }
 
