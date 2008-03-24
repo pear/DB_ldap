@@ -564,12 +564,13 @@ class DB_ldap extends DB_common
         if (DB::isError($realquery)) {
             return $realquery;
         }
-        $result = $this->simpleQuery($realquery);
+        $result = $this->simpleQuery($realquery, $action, $params);
         if (DB::isError($result) || $result === DB_OK) {
             return $result;
-        } else {
-            return new LDAP_result($this, $result);
         }
+
+        $obj = new LDAP_result($this, $result);
+        return $obj;
     }
 
     /**
@@ -611,7 +612,7 @@ class DB_ldap extends DB_common
             return $this->execute($sth, $data);
         }
 
-        $result = $this->simpleQuery($query);
+        $result = $this->simpleQuery($query, $action, $params);
         if (DB::isError($result) || $result === DB_OK) {
             return $result;
         }

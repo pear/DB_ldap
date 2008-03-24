@@ -32,6 +32,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
  </stability>
  <license uri="http://www.gnu.org/copyleft/lesser.html">LGPL</license>
  <notes>
+* Fixed Bug #3463 query disregards parameters [dufuz]
 * Fixed Bug #5215 fetchRow does not return null anymore [dufuz]
 * Fixed Bug #5459 Return-by-reference errors [dufuz]
  </notes>
