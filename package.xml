@@ -33,6 +33,10 @@ http://pear.php.net/dtd/package-2.0.xsd">
  <license uri="http://www.gnu.org/copyleft/lesser.html">LGPL</license>
  <notes>
 * Fixed Bug #3463 query disregards parameters [dufuz]
+* Fixed Bug #4884 Fix for version 3 DB_ldap
+            Now people can pass the LDAP version via protocal in the dsn array
+            if no protocal is specified then DB_ldap will try to use v3 first and
+            fallback on v2 if setting v3 fails.
 * Fixed Bug #5215 fetchRow does not return null anymore [dufuz]
 * Fixed Bug #5459 Return-by-reference errors [dufuz]
  </notes>

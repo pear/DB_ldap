@@ -407,13 +407,14 @@ class DB_ldap extends DB_common
         if (!PEAR::loadExtension('ldap'))
             return $this->raiseError(DB_ERROR_EXTENSION_NOT_FOUND);
 
-        $this->dsn = $dsninfo;
-        $user   = $dsninfo['username'];
-        $pw     = $dsninfo['password'];
-        $host 	= $dsninfo['hostspec'];
-        $port 	= $dsninfo['port'];
-        $this->base = $dsninfo['database'];
+        $this->dsn    = $dsninfo;
+        $user         = $dsninfo['username'];
+        $pw           = $dsninfo['password'];
+        $host         = $dsninfo['hostspec'];
+        $port         = $dsninfo['port'];
+        $this->base   = $dsninfo['database'];
         $this->d_base = $this->base;
+        $version      = $dsninfo['protocol'];
 
         if (empty($host)) {
             return $this->raiseError("no host specified $host");
@@ -427,6 +428,18 @@ class DB_ldap extends DB_common
         if (!$conn) {
             return $this->raiseError(DB_ERROR_CONNECT_FAILED);
         }
+
+        if (isset($version)) {
+            ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, $version);
+        } else {
+            // Use 3 by default
+            $res = ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
+            // If 3 fails then we can try 2
+            if (!$res) {
+                ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 2);
+            }
+        }
+
         if ($user && $pw) {
             $bind = @ldap_bind($conn, $user, $pw);
         } else {
