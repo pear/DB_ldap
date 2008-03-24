@@ -23,16 +23,16 @@ http://pear.php.net/dtd/package-2.0.xsd">
  <date>2008-03-24</date>
  <time>20:34:25</time>
  <version>
-  <release>1.1.1</release>
-  <api>1.1.1</api>
+  <release>1.2.0</release>
+  <api>1.2.0</api>
  </version>
  <stability>
   <release>stable</release>
   <api>stable</api>
  </stability>
  <license uri="http://www.gnu.org/copyleft/lesser.html">LGPL</license>
- <notes>Hopefully fix bugs #1456 #1057 and #3740
-
+ <notes>
+* Fixed Bug #5459 Return-by-reference errors [dufuz]
  </notes>
  <contents>
   <dir name="/">
@@ -42,7 +42,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
  <dependencies>
   <required>
    <php>
-    <min>4.0.0</min>
+    <min>4.3.0</min>
    </php>
    <pearinstaller>
     <min>1.4.0b1</min>
