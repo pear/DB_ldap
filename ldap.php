@@ -957,11 +957,11 @@ class DB_ldap extends DB_common
 
         // Create the sequence entry
         $data = array(
-            dn => $seq_name,
-            objectclass => array("top", "extensibleObject"),
-            sn => $seq_id,
-            cn => 0,
-            uid => 0
+            'dn' => $seq_name,
+            'objectclass' => array("top", "extensibleObject"),
+            'sn' => $seq_id,
+            'cn' => 0,
+            'uid' => 0
         );
 
         // Add the LDAP entry
@@ -982,7 +982,7 @@ class DB_ldap extends DB_common
     {
         // Delete the sequence entry
         $data = array(
-            dn => $seq_name,
+            'dn' => $seq_name,
         );
         $this->pushErrorHandling(PEAR_ERROR_RETURN);
         $data = $this->simpleQuery($data, 'delete');
