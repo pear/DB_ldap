@@ -952,8 +952,7 @@ class DB_ldap extends DB_common
     function createSequence($seq_name)
     {
         // Extract $seq_id from DN
-        ereg("^([^,]*),", $seq_name, $regs);
-        $seq_id = $regs[1];
+        list($seq_id, $_) = explode(",", seq_name, 2);
 
         // Create the sequence entry
         $data = array(
