@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package packagerversion="1.7.2" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
-http://pear.php.net/dtd/tasks-1.0.xsd
-http://pear.php.net/dtd/package-2.0
-http://pear.php.net/dtd/package-2.0.xsd">
+<package packagerversion="1.9.4" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
  <name>DB_ldap</name>
  <channel>pear.php.net</channel>
  <summary>DB interface to LDAP server</summary>
- <description>The PEAR::DB_ldap class provides a DB compliant interface to LDAP servers
- </description>
+ <description>The PEAR::DB_ldap class provides a DB compliant interface to LDAP servers</description>
  <lead>
   <name>Ludovico Magnocavallo</name>
   <user>ludoo</user>
@@ -20,10 +16,10 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>dexter@debian.org</email>
   <active>yes</active>
  </developer>
- <date>2008-03-24</date>
- <time>20:34:25</time>
+ <date>2011-12-11</date>
+ <time>00:16:36</time>
  <version>
-  <release>1.2.0</release>
+  <release>1.2.1</release>
   <api>1.2.0</api>
  </version>
  <stability>
@@ -32,19 +28,17 @@ http://pear.php.net/dtd/package-2.0.xsd">
  </stability>
  <license uri="http://www.gnu.org/copyleft/lesser.html">LGPL</license>
  <notes>
-QA Release:
-* Fixed Bug #3463 query disregards parameters [dufuz]
-* Fixed Bug #4884 Fix for version 3 DB_ldap
-            Now people can pass the LDAP version via protocal in the dsn array
-            if no protocal is specified then DB_ldap will try to use v3 first and
-            fallback on v2 if setting v3 fails.
-* Fixed Bug #5215 fetchRow does not return null anymore [dufuz]
-* Fixed Bug #5459 Return-by-reference errors [dufuz]
+QA Release
+Bug #17721 Use preg_match instead of deprecated functions
+Bug #17771 Patch: Not an undefined constant, but a string
  </notes>
  <contents>
-  <dir name="/">
-   <file baseinstalldir="DB" name="ldap.php" role="php" />
-  </dir> <!-- / -->
+  <dir baseinstalldir="/" name="/">
+   <file baseinstalldir="/" md5sum="36c18d345e616bbcfb114cb88f2e3b21" name="DB/ldap.php" role="php" />
+   <file baseinstalldir="/" md5sum="58c80c6907b917d852cc3272e21b043f" name="tests/AllTests.php" role="test" />
+   <file baseinstalldir="/" md5sum="78a11abaa307f85a70d1a1bddace3292" name="tests/DB_ldapTest.php" role="test" />
+   <file baseinstalldir="/" md5sum="2146bc245e64658a04cc65d4f9eef0ed" name="README" role="data" />
+  </dir>
  </contents>
  <dependencies>
   <required>
@@ -65,4 +59,23 @@ QA Release:
   </required>
  </dependencies>
  <phprelease />
+ <changelog>
+  <release>
+   <version>
+    <release>1.2.1</release>
+    <api>1.2.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2011-12-11</date>
+   <license uri="http://www.gnu.org/copyleft/lesser.html">LGPL</license>
+   <notes>
+QA Release
+Bug #17721 Use preg_match instead of deprecated functions
+Bug #17771 Patch: Not an undefined constant, but a string
+   </notes>
+  </release>
+ </changelog>
 </package>
