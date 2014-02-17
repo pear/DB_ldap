@@ -1,0 +1,36 @@
+{
+    "authors": [
+        {
+            "email": "ludo@asiatica.org",
+            "name": "Ludovico Magnocavallo",
+            "role": "Lead"
+        },
+        {
+            "email": "dexter@debian.org",
+            "name": "Piotr Roszatycki",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "DB_ldap": "./"
+        }
+    },
+    "description": "More info available on: http://pear.php.net/package/DB_ldap",
+    "include-path": [
+        "./"
+    ],
+    "license": "LGPL",
+    "name": "pear/db_ldap",
+    "support": {
+        "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=DB_ldap",
+        "source": "https://github.com/pear/DB_ldap"
+    },
+    "type": "library",
+    "require": {
+        "pear/pear_exception": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    }
+}
